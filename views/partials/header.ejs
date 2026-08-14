@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> · Expense Tracker</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="<%= currentUser ? (currentUser.role === 'admin' ? '/admin' : '/dashboard') : '/login' %>">
+        Expense Tracker
+      </a>
+      <% if (currentUser) { %>
+  <nav class="main-nav">
+    <% if (currentUser.role === 'admin') { %>
+      <a href="/admin">Admin</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/expenses">Expenses</a>
+      <a href="/categories">Categories</a>
+    <% } else { %>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/expenses">Expenses</a>
+      <a href="/categories">Categories</a>
+    <% } %>
+    
+    <button type="button" class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+  🌙 Dark </button>
+
+    <form action="/logout" method="POST" class="logout-form">
+      <button type="submit" class="link-button"> 
+  Logout (<%= currentUser.username || currentUser.email %>) </button>
+    </form>
+  </nav>
+<% } %>
+    </div>
+  </header>
+  <main class="container">
+      <% if (success) { %>
+    <div class="alert alert-success"><%= success %></div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>

@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Dashboard</h1>
+  <a href="/expenses/new" class="btn btn-primary">+ Add expense</a>
+</div>
+
+<% if (currentUser && currentUser.username) { %>
+  <div class="welcome-banner">
+    Yo <strong><%= currentUser.username %></strong>, financial discipline begins here!
+  </div>
+<% } %>
+
+<form method="GET" action="/dashboard" class="filter-form" style="margin-bottom: 20px;">
+  <label for="month">Month</label>
+  <select name="month" id="month" onchange="this.form.submit()">
+    <% months.forEach(m => { %>
+      <option value="<%= m %>" <%= m === month ? 'selected' : '' %>><%= m %></option>
+    <% }) %>
+  </select>
+</form>
+
+<div class="summary-cards">
+  <div class="stat-card">
+    <span class="stat-label">Total spent</span>
+    <span class="stat-value"><%= totalSpent.toFixed(2) %></span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Total budget</span>
+    <span class="stat-value"><%= totalBudget.toFixed(2) %></span>
+  </div>
+</div>
+
+<% if (summary.length === 0) { %>
+  <div class="empty-state">
+    <p>No categories yet. <a href="/categories">Create your first category</a> to get started.</p>
+  </div>
+<% } else { %>
+  <div class="budget-list">
+    <% summary.forEach(row => { %>
+      <div class="budget-row status-<%= row.status %>">
+        <div class="budget-row-head">
+          <span class="category-name"><%= row.category_name %></span>
+          <span class="amounts">
+            <%= row.total_spent.toFixed(2) %>
+            <% if (row.budget > 0) { %> / <%= row.budget.toFixed(2) %><% } else { %> (no budget set)<% } %>
+          </span>
+        </div>
+        <% if (row.budget > 0) { %>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: <%= Math.min(row.percent, 100) %>%"></div>
+          </div>
+          <span class="progress-label">
+            <%= row.percent %>%
+            <% if (row.status === 'over') { %> — over budget<% } %>
+            <% if (row.status === 'near') { %> — approaching budget<% } %>
+          </span>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

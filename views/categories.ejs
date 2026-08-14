@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<h1>Categories</h1>
+
+<div class="form-card">
+  <h2>Add a category</h2>
+  <form method="POST" action="/categories">
+    <label for="name">Category name</label>
+    <input type="text" id="name" name="name" required maxlength="100" placeholder="e.g. Groceries">
+    <button type="submit" class="btn btn-primary">Add category</button>
+  </form>
+</div>
+
+<% if (categories.length === 0) { %>
+  <div class="empty-state"><p>No categories yet. Add one above.</p></div>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Monthly budget (<%= month %>)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% categories.forEach(cat => { %>
+        <tr>
+          <td><%= cat.name %></td>
+          <td>
+            <form method="POST" action="/categories/<%= cat.id %>/budget" class="inline-form">
+              <input type="number" name="amount" step="0.01" min="0"
+                     value="<%= budgetByCategory[cat.id] || '' %>" placeholder="0.00">
+              <button type="submit" class="btn btn-small">Save</button>
+            </form>
+          </td>
+          <td>
+            <form method="POST" action="/categories/<%= cat.id %>/delete" class="inline-form"
+                  onsubmit="return confirm('Delete this category? Its expenses will also be removed.');">
+              <button type="submit" class="btn btn-small btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('partials/footer') %>

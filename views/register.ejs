@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<div class="auth-card">
+  <h1>Create an account</h1>
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+ 
+<form method="POST" action="/register" novalidate>
+  <label for="fullName">Full name</label>
+  <input type="text" id="fullName" name="fullName" required
+         value="<%= formData.fullName || '' %>">
+
+  <label for="username">Username</label>
+  <input type="text" id="username" name="username" required minlength="3" maxlength="30"
+         value="<%= formData.username || '' %>">
+  <p class="hint">3–30 characters. Letters, numbers and underscores only.</p>
+
+  <label for="email">Email address</label>
+  <input type="email" id="email" name="email" required
+         value="<%= formData.email || '' %>">
+
+  <label for="password">Password</label>
+  <input type="password" id="password" name="password" required minlength="8">
+  <p class="hint">At least 8 characters.</p>
+
+  <label for="confirmPassword">Confirm password</label>
+  <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8">
+
+  <button type="submit" class="btn btn-primary">Register</button>
+</form>
+
+  <p class="auth-switch">Already have an account? <a href="/login">Log in</a></p>
+</div>
+
+<%- include('partials/footer') %>

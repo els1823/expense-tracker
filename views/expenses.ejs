@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Expenses</h1>
+  <a href="/expenses/new" class="btn btn-primary">+ Add expense</a>
+</div>
+
+<form method="GET" action="/expenses" class="filter-form">
+  <label for="category">Category</label>
+  <select name="category" id="category">
+    <option value="">All</option>
+    <% categories.forEach(cat => { %>
+      <option value="<%= cat.id %>" <%= String(filters.category) === String(cat.id) ? 'selected' : '' %>>
+        <%= cat.name %>
+      </option>
+    <% }) %>
+  </select>
+
+  <label for="from">From</label>
+  <input type="date" id="from" name="from" value="<%= filters.from || '' %>">
+
+  <label for="to">To</label>
+  <input type="date" id="to" name="to" value="<%= filters.to || '' %>">
+
+  <button type="submit" class="btn btn-small">Filter</button>
+  <a href="/expenses" class="btn btn-small btn-secondary">Clear</a>
+</form>
+
+<% if (expenses.length === 0) { %>
+  <div class="empty-state"><p>No expenses found for the selected filters.</p></div>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% expenses.forEach(exp => { %>
+        <tr>
+          <td><%= exp.date %></td>
+          <td><%= exp.category_name %></td>
+          <td><%= Number(exp.amount).toFixed(2) %></td>
+          <td><%= exp.description || '' %></td>
+          <td class="row-actions">
+            <a href="/expenses/<%= exp.id %>/edit" class="btn btn-small">Edit</a>
+            <form method="POST" action="/expenses/<%= exp.id %>/delete" class="inline-form"
+                  onsubmit="return confirm('Delete this expense?');">
+              <button type="submit" class="btn btn-small btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,23 @@
+{
+  "name": "expense-tracker",
+  "version": "1.0.0",
+  "description": "Lightweight expense and budget tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "seed": "node db/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "better-sqlite3": "^11.3.0",
+    "bcrypt": "^5.1.1",
+    "ejs": "^3.1.10",
+    "dotenv": "^16.4.5"
+  },
+  "allowScripts": {
+    "better-sqlite3@11.10.0": true,
+    "bcrypt@5.1.1": true
+  }
+}

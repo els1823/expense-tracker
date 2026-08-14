@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<h1>Admin overview</h1>
+
+<div class="summary-cards">
+  <div class="stat-card">
+    <span class="stat-label">Total users</span>
+    <span class="stat-value"><%= stats.totalUsers %></span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Total expenses logged</span>
+    <span class="stat-value"><%= stats.totalExpenses %></span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Total amount tracked</span>
+    <span class="stat-value"><%= stats.totalAmountLogged.toFixed(2) %></span>
+  </div>
+</div>
+
+<h2>All users</h2>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Joined</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% users.forEach(u => { %>
+      <tr>
+        <td><%= u.email %></td>
+        <td><%= u.role %></td>
+        <td><%= u.created_at %></td>
+        <td>
+          <a href="/admin/users/<%= u.id %>" class="btn btn-small">View data</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('partials/footer') %>
