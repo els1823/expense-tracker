@@ -1,4 +1,6 @@
 require('dotenv').config();
+// Auto-seed the database if it is empty (useful on Render free tier)
+require('./db/seed');
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
