@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   username TEXT NOT NULL UNIQUE,
   full_name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
+  profile_picture TEXT,
   role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('user', 'admin')),
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

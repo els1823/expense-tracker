@@ -36,6 +36,7 @@
         <th>Category</th>
         <th>Amount</th>
         <th>Description</th>
+        <th>Receipt</th>
         <th></th>
       </tr>
     </thead>
@@ -46,6 +47,13 @@
           <td><%= exp.category_name %></td>
           <td><%= Number(exp.amount).toFixed(2) %></td>
           <td><%= exp.description || '' %></td>
+          <td>
+            <% if (exp.receipt_image) { %>
+              <a href="<%= exp.receipt_image %>" target="_blank" class="btn btn-small">View</a>
+            <% } else { %>
+              —
+            <% } %>
+          </td>
           <td class="row-actions">
             <a href="/expenses/<%= exp.id %>/edit" class="btn btn-small">Edit</a>
             <form method="POST" action="/expenses/<%= exp.id %>/delete" class="inline-form"

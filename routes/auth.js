@@ -65,7 +65,8 @@ router.post('/register', async (req, res) => {
     req.session.username = username.trim().toLowerCase();
     req.session.fullName = fullName.trim();
     req.session.role = 'user';
-
+    
+    req.session.profilePicture = user.profile_picture || null;
     req.session.success = `Welcome, ${fullName.trim()}! Your account has been created.`;
     res.redirect('/dashboard');
   } catch (err) {

@@ -7,24 +7,34 @@ const ExpenseModel = {
       .get(id, userId);
   },
 
-  create(userId, categoryId, amount, date, description) {
-    const info = db
-      .prepare(
-        'INSERT INTO expenses (user_id, category_id, amount, date, description) VALUES (?, ?, ?, ?, ?)'
-      )
-      .run(userId, categoryId, amount, date, description || null);
-    return info.lastInsertRowid;
-  },
+create(userId, categoryId, amount, date, description, receiptImage = null) {
+  const info = db
+    .prepare(
+      `INSERT INTO expenses (user_id, category_id, amount, date, description, receipt_image)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    )
+    .run(userId, categoryId, amount, date, description || null, receiptImage);
+  return info.lastInsertRowid;
+},
 
-  update(id, userId, categoryId, amount, date, description) {
+update(id, userId, categoryId, amount, date, description, receiptImage = null) {
+  if (receiptImage) {
     return db
       .prepare(
         `UPDATE expenses
-         SET category_id = ?, amount = ?, date = ?, description = ?
+         SET category_id = ?, amount = ?, date = ?, description = ?, receipt_image = ?
          WHERE id = ? AND user_id = ?`
       )
-      .run(categoryId, amount, date, description || null, id, userId);
-  },
+      .run(categoryId, amount, date, description || null, receiptImage, id, userId);
+  }
+  return db
+    .prepare(
+      `UPDATE expenses
+       SET category_id = ?, amount = ?, date = ?, description = ?
+       WHERE id = ? AND user_id = ?`
+    )
+    .run(categoryId, amount, date, description || null, id, userId);
+},
 
   remove(id, userId) {
     return db.prepare('DELETE FROM expenses WHERE id = ? AND user_id = ?').run(id, userId);

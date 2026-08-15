@@ -61,4 +61,69 @@
   </div>
 <% } %>
 
+<div class="chart-container">
+  <canvas id="expensePieChart" width="400" height="400"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (function() {
+    const labels = <%- chartLabels %>;
+    const data = <%- chartData %>;
+
+    if (!labels || labels.length === 0) return;
+
+    const ctx = document.getElementById('expensePieChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: [
+            '#2563eb', '#16a34a', '#d97706', '#dc2626',
+            '#7c3aed', '#0891b2', '#db2777', '#65a30d'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              generateLabels: function(chart) {
+                const original = Chart.overrides.pie.plugins.legend.labels.generateLabels;
+                const labelsOut = original.call(this, chart);
+                labelsOut.forEach((label, i) => {
+                  const value = chart.data.datasets[0].data[i];
+                  label.text = `${chart.data.labels[i]} — ${Number(value).toFixed(2)}`;
+                });
+                return labelsOut;
+              }
+            }
+          },
+          title: {
+            display: true,
+            text: 'Spending by Category'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = Number(context.raw).toFixed(2);
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.raw / total) * 100).toFixed(1);
+                return `${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  })();
+</script>
 <%- include('partials/footer') %>

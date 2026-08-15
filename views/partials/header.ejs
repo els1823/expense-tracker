@@ -12,26 +12,36 @@
       <a class="brand" href="<%= currentUser ? (currentUser.role === 'admin' ? '/admin' : '/dashboard') : '/login' %>">
         Expense Tracker
       </a>
-      <% if (currentUser) { %>
+     <% if (currentUser) { %>
   <nav class="main-nav">
     <% if (currentUser.role === 'admin') { %>
       <a href="/admin">Admin</a>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/expenses">Expenses</a>
-      <a href="/categories">Categories</a>
-    <% } else { %>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/expenses">Expenses</a>
-      <a href="/categories">Categories</a>
     <% } %>
-    
-    <button type="button" class="theme-toggle" id="themeToggle" title="Toggle dark mode">
-  🌙 Dark </button>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/expenses">Expenses</a>
+    <a href="/categories">Categories</a>
 
-    <form action="/logout" method="POST" class="logout-form">
-      <button type="submit" class="link-button"> 
-  Logout (<%= currentUser.username || currentUser.email %>) </button>
-    </form>
+    <div class="user-menu">
+      <button type="button" class="user-menu-btn" id="userMenuBtn">
+        <% if (currentUser.profilePicture) { %>
+          <img src="<%= currentUser.profilePicture %>" alt="Avatar" class="avatar-small">
+        <% } else { %>
+          <span class="avatar-placeholder"><%= (currentUser.username || currentUser.email || '?').charAt(0).toUpperCase() %></span>
+        <% } %>
+        <span class="user-name"><%= currentUser.username || currentUser.fullName || currentUser.email %></span>
+        <span class="chevron">▾</span>
+      </button>
+      <div class="user-dropdown" id="userDropdown">
+        <a href="/profile">Profile</a>
+        <form action="/logout" method="POST">
+          <button type="submit">Logout</button>
+        </form>
+      </div>
+    </div>
+
+    <button type="button" class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+      🌙 Dark
+    </button>
   </nav>
 <% } %>
     </div>

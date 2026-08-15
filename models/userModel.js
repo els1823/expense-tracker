@@ -11,7 +11,9 @@ const UserModel = {
 
   findById(id) {
     return db
-      .prepare('SELECT id, email, username, full_name, role, created_at FROM users WHERE id = ?')
+      .prepare(
+        'SELECT id, email, username, full_name, profile_picture, role, created_at FROM users WHERE id = ?'
+      )
       .get(id);
   },
 
@@ -22,6 +24,23 @@ const UserModel = {
       )
       .run(email, username, fullName, passwordHash, 'user');
     return info.lastInsertRowid;
+  },
+
+  updateProfile(id, data) {
+    const { fullName, username, email, profilePicture } = data;
+    return db
+      .prepare(
+        `UPDATE users 
+         SET full_name = ?, username = ?, email = ?, profile_picture = COALESCE(?, profile_picture)
+         WHERE id = ?`
+      )
+      .run(fullName, username, email, profilePicture || null, id);
+  },
+
+  updatePassword(id, passwordHash) {
+    return db
+      .prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+      .run(passwordHash, id);
   },
 
   countAll() {

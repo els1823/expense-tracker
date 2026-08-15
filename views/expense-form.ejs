@@ -6,7 +6,7 @@
   <% if (error) { %>
     <div class="alert alert-error"><%= error %></div>
   <% } %>
-  <form method="POST" action="<%= action %>">
+  <form method="POST" action="<%= action %>" enctype="multipart/form-data">
     <label for="categoryId">Category</label>
     <select id="categoryId" name="categoryId" required>
       <option value="">Select a category</option>
@@ -29,7 +29,15 @@
     <label for="description">Description (optional)</label>
     <input type="text" id="description" name="description" maxlength="500"
            value="<%= expense && expense.description ? expense.description : '' %>">
-
+    
+    <label for="receipt">Receipt (optional)</label>
+    <input type="file" id="receipt" name="receipt" accept="image/*,.pdf">
+    <% if (expense && expense.receipt_image) { %>
+      <p class="hint">
+        Current receipt: 
+        <a href="<%= expense.receipt_image %>" target="_blank">View</a>
+      </p>
+    <% } %>
     <button type="submit" class="btn btn-primary">Save expense</button>
   </form>
 </div>

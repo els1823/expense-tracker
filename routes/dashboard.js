@@ -9,7 +9,7 @@ router.use(requireAuth);
 router.get('/dashboard', (req, res) => {
   const month = req.query.month || new Date().toISOString().slice(0, 7);
 
-  // Simple list of recent months for the selector
+  // Recent months for the selector
   const months = [];
   const now = new Date();
   for (let i = 0; i < 6; i++) {
@@ -17,6 +17,7 @@ router.get('/dashboard', (req, res) => {
     months.push(d.toISOString().slice(0, 7));
   }
 
+  // Current month summary (existing feature)
   const spendByCategory = ExpenseModel.spendByCategoryForMonth(req.session.userId, month);
   const budgets = BudgetModel.listForUserMonth(req.session.userId, month);
 
@@ -38,6 +39,45 @@ router.get('/dashboard', (req, res) => {
   const totalSpent = summary.reduce((sum, r) => sum + r.total_spent, 0);
   const totalBudget = summary.reduce((sum, r) => sum + r.budget, 0);
 
+  // ===== Track my expenditure (date range) =====
+  const from = req.query.from || new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  const to = req.query.to || now.toISOString().slice(0, 10);
+
+  const rangeExpenses = ExpenseModel.listForUser(req.session.userId, { from, to });
+
+  // Group by category for the pie chart
+  const categoryTotals = {};
+  rangeExpenses.forEach((exp) => {
+    const name = exp.category_name || 'Uncategorised';
+    categoryTotals[name] = (categoryTotals[name] || 0) + Number(exp.amount);
+  });
+
+  const chartLabels = Object.keys(categoryTotals);
+  const chartData = Object.values(categoryTotals);
+  const rangeTotalSpent = chartData.reduce((sum, v) => sum + v, 0);
+
+  // Approximate budget for the selected range (using current month budgets as reference)
+  const rangeTotalBudget = totalBudget; // simple approach for now
+
+  let rangeMessage = '';
+  let rangeStatus = 'ok';
+
+  if (rangeTotalBudget > 0) {
+    const difference = rangeTotalBudget - rangeTotalSpent;
+    if (difference > 0) {
+      rangeMessage = `Congratulations! You saved ${difference.toFixed(2)} in this period. Keep up the good financial discipline!`;
+      rangeStatus = 'saved';
+    } else if (difference < 0) {
+      rangeMessage = `You overspent by ${Math.abs(difference).toFixed(2)}. Try to spend more cautiously and judiciously next time.`;
+      rangeStatus = 'over';
+    } else {
+      rangeMessage = `You spent exactly your budget. Well balanced!`;
+      rangeStatus = 'ok';
+    }
+  } else {
+    rangeMessage = 'Set some category budgets to get savings insights.';
+  }
+
   res.render('dashboard', {
     title: 'Dashboard',
     summary,
@@ -45,6 +85,15 @@ router.get('/dashboard', (req, res) => {
     totalBudget,
     month,
     months,
+    // Track section
+    from,
+    to,
+    chartLabels: JSON.stringify(chartLabels),
+    chartData: JSON.stringify(chartData),
+    rangeTotalSpent,
+    rangeTotalBudget,
+    rangeMessage,
+    rangeStatus,
   });
 });
 

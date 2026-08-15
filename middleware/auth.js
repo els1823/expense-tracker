@@ -26,10 +26,12 @@ function attachUserToLocals(req, res, next) {
         email: req.session.email,
         username: req.session.username,
         fullName: req.session.fullName,
+        profilePicture: req.session.profilePicture || null,
         role: req.session.role,
       }
     : null;
   next();
 }
+
 
 module.exports = { requireAuth, requireAdmin, attachUserToLocals };

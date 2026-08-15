@@ -1,6 +1,6 @@
 require('dotenv').config();
 // Auto-seed the database if it is empty (useful on Render free tier)
-require('./db/seed');
+require('./db/seed'); // temporarily disabled to avoid crash
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -41,6 +41,7 @@ app.use('/', require('./routes/categories'));
 app.use('/', require('./routes/expenses'));
 app.use('/', require('./routes/dashboard'));
 app.use('/', require('./routes/admin'));
+app.use('/', require('./routes/profile'));
 
 // Temporary homepage redirect
 app.get('/', (req, res) => {

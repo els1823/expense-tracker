@@ -22,3 +22,20 @@
     toggle.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
   }
 })();
+
+// User menu dropdown
+(function () {
+  const btn = document.getElementById('userMenuBtn');
+  const dropdown = document.getElementById('userDropdown');
+
+  if (btn && dropdown) {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', () => {
+      dropdown.classList.remove('show');
+    });
+  }
+})();

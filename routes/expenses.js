@@ -4,8 +4,35 @@ const ExpenseModel = require('../models/expenseModel');
 const CategoryModel = require('../models/categoryModel');
 const { requireAuth } = require('../middleware/auth');
 const { isPositiveAmount, isValidDate, sanitizeText } = require('../middleware/validate');
+const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 
 router.use(requireAuth);
+
+const receiptDir = path.join(__dirname, '../public/uploads/receipts');
+if (!fs.existsSync(receiptDir)) {
+  fs.mkdirSync(receiptDir, { recursive: true });
+}
+
+const receiptStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, receiptDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `receipt-${req.session.userId}-${Date.now()}${ext}`);
+  },
+});
+
+const uploadReceipt = multer({
+  storage: receiptStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) cb(null, true);
+    else cb(new Error('Only image or PDF files are allowed'));
+  },
+});
 
 router.get('/expenses', (req, res) => {
   const categories = CategoryModel.listForUser(req.session.userId);
@@ -39,7 +66,7 @@ router.get('/expenses/new', (req, res) => {
   });
 });
 
-router.post('/expenses', (req, res) => {
+router.post('/expenses', uploadReceipt.single('receipt'), (req, res) => {
   const { categoryId, amount, date, description } = req.body;
   const categories = CategoryModel.listForUser(req.session.userId);
   const category = CategoryModel.findById(categoryId, req.session.userId);
@@ -59,13 +86,16 @@ router.post('/expenses', (req, res) => {
     });
   }
 
-  ExpenseModel.create(
-    req.session.userId,
-    Number(categoryId),
-    Number(amount),
-    date,
-    sanitizeText(description)
-  );
+ const receiptPath = req.file ? '/uploads/receipts/' + req.file.filename : null;
+
+ExpenseModel.create(
+  req.session.userId,
+  Number(categoryId),
+  Number(amount),
+  date,
+  sanitizeText(description),
+  receiptPath
+);
   res.redirect('/expenses');
 });
 
@@ -87,7 +117,7 @@ router.get('/expenses/:id/edit', (req, res) => {
   });
 });
 
-router.post('/expenses/:id', (req, res) => {
+router.post('/expenses/:id', uploadReceipt.single('receipt'), (req, res) => {
   const expense = ExpenseModel.findById(req.params.id, req.session.userId);
   if (!expense) {
     return res.status(404).render('error', {
@@ -121,14 +151,17 @@ router.post('/expenses/:id', (req, res) => {
     });
   }
 
-  ExpenseModel.update(
-    expense.id,
-    req.session.userId,
-    Number(categoryId),
-    Number(amount),
-    date,
-    sanitizeText(description)
-  );
+const receiptPath = req.file ? '/uploads/receipts/' + req.file.filename : null;
+
+ExpenseModel.update(
+  expense.id,
+  req.session.userId,
+  Number(categoryId),
+  Number(amount),
+  date,
+  sanitizeText(description),
+  receiptPath
+);
   res.redirect('/expenses');
 });
 
