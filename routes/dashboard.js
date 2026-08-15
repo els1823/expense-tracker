@@ -59,7 +59,7 @@ router.get('/dashboard', (req, res) => {
   // Approximate budget for the selected range (using current month budgets as reference)
   const rangeTotalBudget = totalBudget; // simple approach for now
 
-  let rangeMessage = '';
+    let rangeMessage = '';
   let rangeStatus = 'ok';
 
   if (rangeTotalBudget > 0) {
@@ -68,14 +68,18 @@ router.get('/dashboard', (req, res) => {
       rangeMessage = `Congratulations! You saved ${difference.toFixed(2)} in this period. Keep up the good financial discipline!`;
       rangeStatus = 'saved';
     } else if (difference < 0) {
-      rangeMessage = `You overspent by ${Math.abs(difference).toFixed(2)}. Try to spend more cautiously and judiciously next time.`;
+      rangeMessage = `You overspent by ${Math.abs(difference).toFixed(2)}. Try to spend more cautiously and judiciously.`;
       rangeStatus = 'over';
     } else {
       rangeMessage = `You spent exactly your budget. Well balanced!`;
       rangeStatus = 'ok';
     }
+  } else if (rangeTotalSpent > 0) {
+    rangeMessage = `You spent ${rangeTotalSpent.toFixed(2)} in this period. Set category budgets to get savings insights.`;
+    rangeStatus = 'ok';
   } else {
-    rangeMessage = 'Set some category budgets to get savings insights.';
+    rangeMessage = 'No expenses found in the selected date range. Add some expenses to see insights.';
+    rangeStatus = 'ok';
   }
 
   res.render('dashboard', {
