@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS expenses (
   category_id INTEGER NOT NULL,
   amount REAL NOT NULL CHECK(amount > 0),
   description TEXT,
-  date TEXT NOT NULL,           -- format: YYYY-MM-DD
+  date TEXT NOT NULL,
+  receipt_image TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
@@ -48,3 +49,4 @@ CREATE TABLE IF NOT EXISTS expenses (
 CREATE INDEX IF NOT EXISTS idx_expenses_user_date ON expenses(user_id, date);
 CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id);
 CREATE INDEX IF NOT EXISTS idx_categories_user ON categories(user_id);
+
